@@ -1,0 +1,29 @@
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker image
+        run: |
+          docker build . -t gryshchuk/gokind:${{ github.sha }}
+          docker push gryshchuk/gokind:${{ github.sha }}
+
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            docker pull gryshchuk/gokind:${{ github.sha }}
+            docker stop gokind || true
+            docker run --rm -d --name gokind -p 80:8000 gryshchuk/gokind:${{ github.sha }}
