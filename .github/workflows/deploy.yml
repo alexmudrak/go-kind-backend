@@ -27,6 +27,7 @@ jobs:
           username: ${{ secrets.DROPLET_USER }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
+            run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             docker pull gryshchuk/gokind:${{ github.sha }}
             docker stop gokind || true
             docker run --rm -d --name gokind -p 80:8000 gryshchuk/gokind:${{ github.sha }}
