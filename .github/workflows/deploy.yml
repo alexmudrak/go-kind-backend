@@ -15,8 +15,8 @@ on:
         required: true
 #2
 env:
-  REGISTRY: "gryshchuk"
-  IMAGE_NAME: "gokind"
+  REGISTRY: "registry.digitalocean.com/gryshchuk"
+  IMAGE_NAME: "web"
 
 #3
 jobs:
@@ -67,3 +67,6 @@ jobs:
             --restart always \
             --name $(echo $IMAGE_NAME) \
             $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+
+
+
