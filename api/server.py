@@ -4,7 +4,7 @@ import traceback
 from fastapi import FastAPI, Depends, HTTPException
 from authlib.integrations.starlette_client import OAuth
 from starlette.responses import RedirectResponse
-
+from starlette.middleware.sessions import SessionMiddleware
 
 
 app_key="uHHX7LXWnshmoHlgGkmpBeIzP"
@@ -16,7 +16,8 @@ access_token_secret="EYiWL9qdS13TUMt512Ek9lKnWyUpBstSyoFjKQg1SA3X6"
 client_id="N1gyR29FUXZuWi1UbGF4UTFIdmo6MTpjaQ"
 client_secret="JMLkZIaNg-IcmlrxzYucfxHzjfGS1En4oe1j2-HCTTfD8-4ypC",
 
-app = FastAPI()
+
+
 
 oauth = OAuth()
 oauth.register(
@@ -37,6 +38,8 @@ from fastapi import FastAPI, Request
 import httpx
 
 app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key="secret-string")
+
 redirect_uri = "https://gokind.xyz/authorize/twitter"
 
 @app.exception_handler(Exception)
@@ -61,18 +64,33 @@ async def login_twitter():
     return RedirectResponse(url=auth_url)
 
 
-@app.route("/authorize/twitter")
-async def authorize_twitter():
-    token = await oauth.twitter.authorize_access_token()
-    #resp = await oauth.twitter.get('account/verify_credentials.json', token=token)
-    #user_info = resp.json()
-    # Use user_info according to your application's needs
-    print(token)
-    return token
+#@app.route("/authorize/twitter")
+#async def authorize_twitter(data):
+#    token = data.query_params['code']
+#    token = await oauth.twitter.authorize_access_token()
+#    #resp = await oauth.twitter.get('account/verify_credentials.json', token=token)
+#    #user_info = resp.json()
+#    # Use user_info according to your application's needs
+#    print(token)
+#    return token
 
-@app.get("/v1/test", status_code=status.HTTP_200_OK)
-async def test():
-    return JSONResponse(content="ok")
+
+@app.get('/authorize/twitter')
+async def auth(request: Request):
+    token = await oauth.twitter.authorize_access_token(request)
+    url = 'account/verify_credentials.json'
+    resp = await oauth.twitter.get(
+        url, params={'skip_status': True}, token=token)
+    user = resp.json()
+    request.session['user'] = dict(user)
+    print(user)
+    return RedirectResponse(url='/')
+
+
+@app.get('/logout')
+async def logout(request):
+    request.session.pop('user', None)
+    return RedirectResponse(url='/')
 
 
 if __name__ == "__main__":
