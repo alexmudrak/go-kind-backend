@@ -7,30 +7,19 @@ from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 
 
-app_key="uHHX7LXWnshmoHlgGkmpBeIzP"
-app_secret="tHldeDxrOUdtT8FtN2q6vzTtCrwmFWBooRayFaZUWiBmJEP1am"
-
-access_token="1755669308997259264-l4dctliLMuzVmG2BCsWaMm6VLmutpf"
-access_token_secret="EYiWL9qdS13TUMt512Ek9lKnWyUpBstSyoFjKQg1SA3X6"
-
 client_id="N1gyR29FUXZuWi1UbGF4UTFIdmo6MTpjaQ"
 client_secret="JMLkZIaNg-IcmlrxzYucfxHzjfGS1En4oe1j2-HCTTfD8-4ypC",
 
 
 
+import tweepy
 
-oauth = OAuth()
-oauth.register(
-    'twitter',
+oauth2_user_handler = tweepy.OAuth2UserHandler(
     client_id=client_id,
-    client_secret=client_secret,
-    authorize_url='https://twitter.com/i/oauth2/authorize',
-    authorize_params=None,
-    access_token_url='https://api.twitter.com/oauth2/token',
-    access_token_params=None,
-    refresh_token_url=None,
-    redirect_uri='YOUR_CALLBACK_URL',
-    client_kwargs={'scope': 'tweet.read users.read'},
+    redirect_uri="https://gokind.xyz/authorize/twitter",
+    scope=['tweet.read","users.read'],
+    # Client Secret is only necessary if using a confidential client
+    #client_secret=client_secret
 )
 
 
@@ -40,7 +29,7 @@ import httpx
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="secret-string")
 
-redirect_uri = "https://gokind.xyz/authorize/twitter"
+
 
 @app.exception_handler(Exception)
 async def error_handler(request: Request, exc: Exception):
@@ -60,31 +49,26 @@ def read_root():
 @app.get("/login/twitter")
 async def login_twitter():
     # Redirect user to Twitter's OAuth 2.0 authorization page
-    auth_url = f'''https://twitter.com/i/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=tweet.read%20users.read%20follows.read%20follows.write&state=state&code_challenge=challenge&code_challenge_method=plain'''
+    #redirect_uri = "https://gokind.xyz/authorize/twitter"
+    #auth_url = f'''https://twitter.com/i/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=tweet.read%20users.read%20follows.read%20follows.write&state=state&code_challenge=challenge&code_challenge_method=plain'''
+    #https://twitter.com/i/oauth2/authorize?response_type=code&client_id=N1gyR29FUXZuWi1UbGF4UTFIdmo6MTpjaQ&redirect_uri=https%3A%2F%2Fgokind.xyz%2Fauthorize%2Ftwitter&scope=tweet.read%22%2C%22users.read&state=Ep9dePp0xb6i5XlAjkfXj3wtvNdM8s&code_challenge=uoiBXrbwIGCCSwHKs1HPXi_h8MLLE4YGsdBYDcbHNnA&code_challenge_method=S256
+    auth_url = oauth2_user_handler.get_authorization_url()
+    print(auth_url)
     return RedirectResponse(url=auth_url)
 
 
-#@app.route("/authorize/twitter")
-#async def authorize_twitter(data):
-#    token = data.query_params['code']
-#    token = await oauth.twitter.authorize_access_token()
-#    #resp = await oauth.twitter.get('account/verify_credentials.json', token=token)
-#    #user_info = resp.json()
-#    # Use user_info according to your application's needs
-#    print(token)
-#    return token
+@app.route("/authorize/twitter")
+async def authorize_twitter(data):
+    #token = data.query_params['code']
+    #resp = await oauth.twitter.get('account/verify_credentials.json', token=token)
+    access_token = oauth2_user_handler.fetch_token(
+    "Authorization Response URL here"
+)
+    #user_info = resp.json()
+    # Use user_info according to your application's needs
+    print(token)
+    return token
 
-
-@app.get('/authorize/twitter')
-async def auth(request: Request):
-    token = await oauth.twitter.authorize_access_token(request)
-    url = 'account/verify_credentials.json'
-    resp = await oauth.twitter.get(
-        url, params={'skip_status': True}, token=token)
-    user = resp.json()
-    request.session['user'] = dict(user)
-    print(user)
-    return RedirectResponse(url='/')
 
 
 @app.get('/logout')
