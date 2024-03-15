@@ -34,6 +34,8 @@ def read_root():
 
 #https://stackoverflow.com/questions/74649514/how-to-recreate-tweepy-oauth2userhandler-across-web-requests
 # Flask route to redirect user to Twitter's authorization page
+saved_authorize_url = None
+
 @app.get("/login/twitter")
 async def login_twitter():
     # Redirect user to Twitter's OAuth 2.0 authorization page
@@ -41,6 +43,7 @@ async def login_twitter():
     #auth_url = f'''https://twitter.com/i/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope=tweet.read%20users.read%20follows.read%20follows.write&state=state&code_challenge=challenge&code_challenge_method=plain'''
     #https://twitter.com/i/oauth2/authorize?response_type=code&client_id=N1gyR29FUXZuWi1UbGF4UTFIdmo6MTpjaQ&redirect_uri=https%3A%2F%2Fgokind.xyz%2Fauthorize%2Ftwitter&scope=tweet.read%22%2C%22users.read&state=Ep9dePp0xb6i5XlAjkfXj3wtvNdM8s&code_challenge=uoiBXrbwIGCCSwHKs1HPXi_h8MLLE4YGsdBYDcbHNnA&code_challenge_method=S256
     authorize_url, code_verifier = get_twitter_authorize_url_and_verifier("https://gokind.xyz/authorize/twitter")
+    saved_authorize_url = authorize_url
     print(authorize_url, code_verifier)
     #return JSONResponse(content={"authorize_url":authorize_url, "code_verifier":code_verifier }) 
     return RedirectResponse(url=authorize_url)
@@ -48,9 +51,9 @@ async def login_twitter():
 
 @app.get("/authorize/twitter")
 async def authorize_twitter(state, code, request: Request):
-    authorize_url, code_verifier = get_twitter_authorize_url_and_verifier("https://gokind.xyz/authorize/twitter")
+
     twitter_verifier = code
-    result = get_twitter_token(callback_url=authorize_url,
+    result = get_twitter_token(callback_url=saved_authorize_url,
                       current_url=str(request.url),
                       twitter_verifier=twitter_verifier)
     return result
