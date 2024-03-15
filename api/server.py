@@ -51,7 +51,7 @@ async def authorize_twitter(state, code, request: Request):
     authorize_url, code_verifier = get_twitter_authorize_url_and_verifier("https://gokind.xyz/authorize/twitter")
     twitter_verifier = code
     result = get_twitter_token(callback_url=authorize_url,
-                      current_url=current_url,
+                      current_url=request.url,
                       twitter_verifier=twitter_verifier)
     return result
 
