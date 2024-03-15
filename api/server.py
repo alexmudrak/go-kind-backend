@@ -9,9 +9,12 @@ from starlette.middleware.sessions import SessionMiddleware
 from utils.auth_helper import get_twitter_token, get_twitter_authorize_url_and_verifier, client_id, client_secret
 
 from fastapi import FastAPI, Request
-import httpx
+import ssl
+
+#openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
 
 app = FastAPI()
+
 
 redirect_uri = "https://gokind.xyz"
 
@@ -103,4 +106,4 @@ async def logout(request):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app)
+    uvicorn.run(app, host="0.0.0.0", port=8000, ssl_keyfile="key.pem", ssl_certfile="cert.pem")

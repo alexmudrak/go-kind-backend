@@ -6,8 +6,9 @@ services:
       dockerfile: api/Dockerfile
     ports:
       - "8000:8000"
-    command: ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["uvicorn", "server:app", "--ssl-keyfile", "key.pem", "--ssl-certfile", "cert.pem", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     environment:
       POSTGRES_HOST: "localhost"
       POSTGRES_DATABASE_NAME: "postgres"
       OPENAI_API_KEY: "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"
+      
