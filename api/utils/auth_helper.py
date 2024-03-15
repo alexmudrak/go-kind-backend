@@ -51,9 +51,11 @@ def get_twitter_authorize_url_and_verifier(callback_url: str):
 
 def get_twitter_token(callback_url: str, current_url: str, twitter_verifier: str): 
     # then pass twitter_verifier back in here 
+    callback_url=callback_url.replace('http',"https")
     handler = _oauth2_handler(callback_url, twitter_verifier)
 
     try:
+        current_url=current_url.replace('http',"https")
         return handler.fetch_token(current_url)
     except OAuth2Error as e:
         raise Exception(e.description) from e
