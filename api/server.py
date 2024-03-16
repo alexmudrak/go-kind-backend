@@ -25,7 +25,7 @@ def _oauth2_handler(callback_url: str) -> OAuth2UserHandler:
         client_id=client_id,
         redirect_uri=callback_url,
         scope=["offline.access", "users.read", "tweet.read"],
-        consumer_secret=client_secret,
+        client_secret=client_secret,
     )
 handler = _oauth2_handler("https://gokind.xyz/authorize/twitter")
 
