@@ -22,12 +22,12 @@ from tweepy import OAuth2UserHandler
 
 def _oauth2_handler(callback_url: str) -> OAuth2UserHandler:
     return OAuth2UserHandler(
-        client_id=MY_TWITTER_KEY,
+        client_id=client_id,
         redirect_uri=callback_url,
         scope=["offline.access", "users.read", "tweet.read"],
-        consumer_secret=MY_TWITTER_SECRET,
+        consumer_secret=client_secret,
     )
-handler = _oauth2_handler("https://gokind.xyz/authorize/twitter", None)
+handler = _oauth2_handler("https://gokind.xyz/authorize/twitter")
 
 
 
