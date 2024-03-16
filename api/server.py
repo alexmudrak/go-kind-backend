@@ -18,6 +18,20 @@ app = FastAPI()
 
 redirect_uri = "https://gokind.xyz"
 
+from tweepy import OAuth2UserHandler
+
+def _oauth2_handler(callback_url: str) -> OAuth2UserHandler:
+    return OAuth2UserHandler(
+        client_id=MY_TWITTER_KEY,
+        redirect_uri=callback_url,
+        scope=["offline.access", "users.read", "tweet.read"],
+        consumer_secret=MY_TWITTER_SECRET,
+    )
+handler = _oauth2_handler("https://gokind.xyz/authorize/twitter", None)
+
+
+
+
 @app.exception_handler(Exception)
 async def error_handler(request: Request, exc: Exception):
     custom_message = "An error occurred: {}".format(str(exc))
@@ -52,11 +66,13 @@ async def login_twitter():
 @app.get("/authorize/twitter")
 async def authorize_twitter(state, code, request: Request):
 
-    twitter_verifier = code
-    result = get_twitter_token(callback_url=saved_authorize_url,
-                      current_url=str(request.url),
-                      twitter_verifier=twitter_verifier)
-    return result
+    #twitter_verifier = code
+    #result = get_twitter_token(callback_url=saved_authorize_url,
+    #                  current_url=str(request.url),
+    #                  twitter_verifier=twitter_verifier)
+    #return result
+    token_data = handler.fetch_token(str(request.url))
+    print(token_data) 
 
 import requests
 import base64
