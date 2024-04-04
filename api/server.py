@@ -63,22 +63,23 @@ async def login_twitter():
     return RedirectResponse(url=authorize_url)
 
 
-@app.get("/authorize/twitter")
-async def authorize_twitter(state, code, request: Request):
-
-    #twitter_verifier = code
-    #result = get_twitter_token(callback_url=saved_authorize_url,
-    #                  current_url=str(request.url),
-    #                  twitter_verifier=twitter_verifier)
-    #return result
-    token_data = handler.fetch_token(str(request.url))
-    print(token_data) 
+# @app.get("/authorize/twitter")
+# async def authorize_twitter(state, code, request: Request):
+#
+#     #twitter_verifier = code
+#     #result = get_twitter_token(callback_url=saved_authorize_url,
+#     #                  current_url=str(request.url),
+#     #                  twitter_verifier=twitter_verifier)
+#     #return result
+#     token_data = handler.fetch_token(str(request.url))
+#     print(token_data)
 
 import requests
 import base64
 
 
-@app.get("/v2/authorize/twitter")
+# @app.get("/v2/authorize/twitter")
+@app.get("/authorize/twitter")
 async def authorize_twitter(state, code, request: Request):
     auth_code = code #"auth_code_from_callback"
     code_verifier = "123" #"code_challenge_string"  # Should match the verifier used to generate the challenge
