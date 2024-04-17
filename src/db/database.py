@@ -10,7 +10,8 @@ DATABASE_URL = settings.db_url
 
 # TODO: echo state should be linked to APP_MODE
 engine = create_async_engine(
-    DATABASE_URL, echo=False, pool_size=10, max_overflow=20
+    # DATABASE_URL, echo=False, pool_size=10, max_overflow=20
+    DATABASE_URL, echo=False
 )
 
 AsyncSessionFactory = async_sessionmaker(

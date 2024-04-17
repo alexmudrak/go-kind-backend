@@ -1,5 +1,8 @@
 import tweepy
 from requests_oauthlib import OAuth2Session
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from controllers.user_controllers import UserController
 
 
 class TwitterAuthenticator(OAuth2Session):
@@ -18,22 +21,34 @@ class TwitterAuthenticator(OAuth2Session):
             scope=scope,
         )
         self.client = tweepy.Client(access_token) if access_token else None
+
     def __update_client(self, access_token: str):
         self.client = tweepy.Client(access_token)
 
-    def get_authorization_url(self) -> str:
+    async def get_authorization_url(self) -> str:
         return self.user_handler.get_authorization_url()
 
-    def get_access_token(self, url: str) -> dict:
+    async def get_access_token(
+        self, url: str, db_session: AsyncSession
+    ) -> dict:
         response = self.user_handler.fetch_token(url)
         access_token = response.get("access_token", None)
+
         if access_token:
             self.__update_client(access_token)
-            breakpoint()
+            user_controller = UserController(db_session)
+            user = await self.get_user_info()
+            if user:
+                user = user.data
+                user = await user_controller.get_or_create(
+                    user.id,
+                    user.name,
+                    user.username,
+                )
 
         return response
 
-    def refresh_user_token(self, refresh_token: str) -> dict:
+    async def refresh_user_token(self, refresh_token: str) -> dict:
         response = self.user_handler.refresh_token(
             "https://api.twitter.com/2/oauth2/token",
             refresh_token=refresh_token,
@@ -44,10 +59,10 @@ class TwitterAuthenticator(OAuth2Session):
 
         return response
 
-    def get_user_info(self):
+    async def get_user_info(self) -> tweepy.Response | None:
         if not self.client:
             raise
 
         user = self.client.get_me(user_auth=False)
-
-        return user
+        if isinstance(user, tweepy.Response):
+            return user

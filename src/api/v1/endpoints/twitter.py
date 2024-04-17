@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.responses import RedirectResponse
 
 from core.config import settings
+from db.session import get_session
 from integrations.twitter_integrations import TwitterAuthenticator
 from schemas.twitter_schemas import TwitterAccessTokenResponse
 
@@ -18,13 +20,13 @@ twitter = TwitterAuthenticator(
 
 @router.get("/login")
 async def login_twitter():
-    authorize_url = twitter.get_authorization_url()
+    authorize_url = await twitter.get_authorization_url()
     return RedirectResponse(url=authorize_url)
 
 
 @router.get("/refresh/{refresh_token}")
 async def refresh_twitter(refresh_token: str):
-    result = twitter.refresh_user_token(refresh_token)
+    result = await twitter.refresh_user_token(refresh_token)
 
     return result
 
@@ -33,7 +35,7 @@ async def refresh_twitter(refresh_token: str):
     "/authorize",
     response_model=TwitterAccessTokenResponse,
 )
-async def authorize_twitter(request: Request):
+async def authorize_twitter(request: Request, db_session: AsyncSession = Depends(get_session)):
     query_params = dict(request.query_params)
 
     if "code" not in query_params or "state" not in query_params:
@@ -42,6 +44,6 @@ async def authorize_twitter(request: Request):
             detail="Missing 'code' or 'state' query parameters.",
         )
     url = str(request.url)
-    access_token = twitter.get_access_token(url)
+    access_token = await twitter.get_access_token(url, db_session)
 
     return access_token
