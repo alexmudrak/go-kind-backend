@@ -6,10 +6,11 @@ from fastapi.staticfiles import StaticFiles
 from starlette.responses import RedirectResponse
 
 from api.v1.routers import router as v1_api_router
+from core.config import settings
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=settings.static_files_path), name="static")
 app.include_router(v1_api_router, prefix="/api/v1")
 
 
@@ -25,7 +26,7 @@ async def error_handler(_: Request, exc: Exception):
 
 @app.get("/")
 def read_root():
-    return FileResponse("static/index.html")
+    return FileResponse(f"{settings.static_files_path}/index.html")
 
 
 @app.get("/logout")
@@ -38,9 +39,10 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        app,
+        "main:app",
         host="0.0.0.0",
         port=8000,
-        ssl_keyfile="./certificates/key.pem",
-        ssl_certfile="./certificates/cert.pem",
+        ssl_keyfile=f"{settings.certificates_path}/key.pem",
+        ssl_certfile=f"{settings.certificates_path}/cert.pem",
+        reload=True,
     )
