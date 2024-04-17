@@ -29,6 +29,7 @@ class TwitterAuthenticator(OAuth2Session):
         access_token = response.get("access_token", None)
         if access_token:
             self.__update_client(access_token)
+            breakpoint()
 
         return response
 
