@@ -25,7 +25,8 @@ class Settings(BaseSettings):
         "CERTIFICATES_PATH", "./certificates"
     )
     # DB setup
-    db_url: str = "sqlite:///./test.db"
+    # TODO: Change to Postgresql
+    db_url: str = "sqlite+aiosqlite:///./test.db"
 
     class Config:
         extra = "allow"
