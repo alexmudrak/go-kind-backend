@@ -43,6 +43,5 @@ async def authorize_twitter(request: Request):
         )
     url = str(request.url)
     access_token = twitter.get_access_token(url)
-    twitter.get_user_info()
 
     return access_token
