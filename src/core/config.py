@@ -19,10 +19,13 @@ class Settings(BaseSettings):
         "APP_REDIRECT_URI", "https://gokind.xyz/api/v1/twitter/authorize"
     )
     app_scopes: list[str] = ["offline.access", "users.read", "tweet.read"]
+    # Static setup
     static_files_path: str = os.getenv("STATIC_FILES_PATH", "./static")
     certificates_path: str = os.getenv(
         "CERTIFICATES_PATH", "./certificates"
     )
+    # DB setup
+    db_url: str = "sqlite:///./test.db"
 
     class Config:
         extra = "allow"
