@@ -22,6 +22,13 @@ async def login_twitter():
     return RedirectResponse(url=authorize_url)
 
 
+@router.get("/refresh/{refresh_token}")
+async def refresh_twitter(refresh_token: str):
+    result = twitter.refresh_user_token(refresh_token)
+
+    return result
+
+
 @router.get(
     "/authorize",
     response_model=TwitterAccessTokenResponse,
@@ -36,5 +43,6 @@ async def authorize_twitter(request: Request):
         )
     url = str(request.url)
     access_token = twitter.get_access_token(url)
+    twitter.get_user_info()
 
     return access_token

@@ -27,6 +27,12 @@ class TwitterAuthenticator(OAuth2Session):
 
         return response
 
+    def refresh_user_token(self, refresh_token: str):
+        response = self.user_handler.refresh_token(
+            "https://api.twitter.com/2/oauth2/token",
+            refresh_token=refresh_token,
+        )
+
         return response
 
     def get_user_info(self):
