@@ -10,10 +10,12 @@ from alembic import context
 from core.config import settings
 from models.base_model import Base
 from models.user_model import UserModel
+from models.token_model import TokenModel
 
 _ = (
     Base,
     UserModel,
+    TokenModel,
 )
 
 # this is the Alembic Config object, which provides

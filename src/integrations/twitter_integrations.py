@@ -2,6 +2,7 @@ import tweepy
 from requests_oauthlib import OAuth2Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from controllers.token_controllers import TokenController
 from controllers.user_controllers import UserController
 
 
@@ -37,6 +38,7 @@ class TwitterAuthenticator(OAuth2Session):
         if access_token:
             self.__update_client(access_token)
             user_controller = UserController(db_session)
+            token_controller = TokenController(db_session)
             user = await self.get_user_info()
             if user:
                 user = user.data
