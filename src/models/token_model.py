@@ -11,7 +11,6 @@ class TokenModel(BaseAppModel):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     access_token: Mapped[str] = mapped_column(nullable=False)
     access_token_expire: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    reshresh_token: Mapped[str] =  mapped_column(nullable=False)
-    refresh_token_expire: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    refresh_token: Mapped[str] =  mapped_column(nullable=False)
 
     user = relationship("UserModel", back_populates="token")

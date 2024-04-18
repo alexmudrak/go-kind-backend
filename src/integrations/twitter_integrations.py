@@ -47,10 +47,11 @@ class TwitterAuthenticator(OAuth2Session):
                     user.name,
                     user.username,
                 )
+                await token_controller.create_or_update(user.id, response)
 
         return response
 
-    async def refresh_user_token(self, refresh_token: str) -> dict:
+    async def refresh_user_token(self, refresh_token: str, db_session: AsyncSession) -> dict:
         response = self.user_handler.refresh_token(
             "https://api.twitter.com/2/oauth2/token",
             refresh_token=refresh_token,
@@ -58,6 +59,17 @@ class TwitterAuthenticator(OAuth2Session):
         access_token = response.get("access_token", None)
         if access_token:
             self.__update_client(access_token)
+            user_controller = UserController(db_session)
+            token_controller = TokenController(db_session)
+            user = await self.get_user_info()
+            if user:
+                user = user.data
+                user = await user_controller.get_or_create(
+                    user.id,
+                    user.name,
+                    user.username,
+                )
+                await token_controller.create_or_update(user.id, response)
 
         return response
 

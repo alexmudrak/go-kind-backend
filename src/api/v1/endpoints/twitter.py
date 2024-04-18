@@ -25,8 +25,8 @@ async def login_twitter():
 
 
 @router.get("/refresh/{refresh_token}")
-async def refresh_twitter(refresh_token: str):
-    result = await twitter.refresh_user_token(refresh_token)
+async def refresh_twitter(refresh_token: str, db_session: AsyncSession = Depends(get_session)):
+    result = await twitter.refresh_user_token(refresh_token, db_session)
 
     return result
 
@@ -35,7 +35,9 @@ async def refresh_twitter(refresh_token: str):
     "/authorize",
     response_model=TwitterAccessTokenResponse,
 )
-async def authorize_twitter(request: Request, db_session: AsyncSession = Depends(get_session)):
+async def authorize_twitter(
+    request: Request, db_session: AsyncSession = Depends(get_session)
+):
     query_params = dict(request.query_params)
 
     if "code" not in query_params or "state" not in query_params:
