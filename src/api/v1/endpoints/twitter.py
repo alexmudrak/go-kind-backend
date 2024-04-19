@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.responses import RedirectResponse
 
+from api.dependencies import get_session
 from core.config import settings
-from db.session import get_session
 from integrations.twitter_integrations import TwitterAuthenticator
 from schemas.twitter_schemas import TwitterAccessTokenResponse
 
@@ -25,7 +25,9 @@ async def login_twitter():
 
 
 @router.get("/refresh/{refresh_token}")
-async def refresh_twitter(refresh_token: str, db_session: AsyncSession = Depends(get_session)):
+async def refresh_twitter(
+    refresh_token: str, db_session: AsyncSession = Depends(get_session)
+):
     result = await twitter.refresh_user_token(refresh_token, db_session)
 
     return result

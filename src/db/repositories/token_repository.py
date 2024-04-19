@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from models.token_model import TokenModel
 from schemas.token_schemas import TokenData
@@ -11,11 +12,19 @@ class TokenRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create_or_update(
-        self, user_id: int, token_data: TokenData
-    ) -> TokenModel:
+    async def get_token_by_access_token(self, access_token: str) -> TokenModel:
+        query = (
+            select(TokenModel)
+            .where(TokenModel.access_token == access_token)
+        )
+        result = await self.session.execute(query)
+
+        return result.scalars().first()
+
+    async def create_or_update(self, user_id: int, token_data: TokenData) -> TokenModel:
         async with self.session.begin():
             query = select(TokenModel).where(TokenModel.user_id == user_id)
+
             result = await self.session.execute(query)
             token = result.scalars().first()
 
