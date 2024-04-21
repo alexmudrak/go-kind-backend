@@ -21,20 +21,17 @@ class Settings(BaseSettings):
     app_scopes: list[str] = ["offline.access", "users.read", "tweet.read"]
     # Static setup
     static_files_path: str = os.getenv("STATIC_FILES_PATH", "./static")
-    certificates_path: str = os.getenv(
-        "CERTIFICATES_PATH", "./certificates"
-    )
+    certificates_path: str = os.getenv("CERTIFICATES_PATH", "./certificates")
     # DB setup
-    # TODO: Change to Postgresql
     db_host: str = os.getenv("DB_HOST", "localhost")
     db_port: int = int(os.getenv("DB_PORT", 5432))
     db_name: str = os.getenv("DB_NAME", "go-kind")
     db_user: str = os.getenv("DB_USER", "go-kind")
     db_password: str = os.getenv("DB_PASSWORD", "go-kind")
 
-    db_url: str = f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-
-
+    db_url: str = (
+        f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    )
 
     class Config:
         extra = "allow"

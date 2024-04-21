@@ -1,0 +1,27 @@
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.repositories.link_repository import LinkRepository
+from models.token_model import TokenModel
+from schemas.link_schemas import LinkData, ReadLinkData
+
+
+class LinkController:
+    def __init__(self, session: AsyncSession, token: TokenModel):
+        self.link_resository = LinkRepository(session)
+        self.user = token.user
+
+    async def get_links(self):
+        pass
+
+    async def create_link(self, link_data: LinkData) -> ReadLinkData:
+        try:
+            link = await self.link_resository.create_link(self.user.id, link_data)
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A link with the same user_id, name, beneficiary, and description already exists.",
+            )
+
+        return ReadLinkData.model_validate(link)

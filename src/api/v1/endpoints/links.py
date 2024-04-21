@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.dependencies import bearer_token
+from api.dependencies import bearer_token, get_session
+from controllers.link_controllers import LinkController
 from models.token_model import TokenModel
+from schemas.link_schemas import LinkData
 
 router = APIRouter()
 
@@ -13,8 +16,12 @@ async def get_links(
     pass
 
 
-@router.post("/")
+@router.post("/", response_model=LinkData)
 async def create_link(
+    link_data: LinkData = Body(...),
     token: TokenModel = Depends(bearer_token),
+    db_session: AsyncSession = Depends(get_session),
 ):
-    pass
+    link_controller = LinkController(db_session, token)
+
+    return await link_controller.create_link(link_data)
