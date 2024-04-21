@@ -12,12 +12,17 @@ class LinkController:
         self.link_resository = LinkRepository(session)
         self.user = token.user
 
-    async def get_links(self):
-        pass
+    async def get_links(self) -> list[ReadLinkData]:
+        return [
+            ReadLinkData.model_validate(link)
+            for link in await self.link_resository.get_links(self.user.id)
+        ]
 
     async def create_link(self, link_data: LinkData) -> ReadLinkData:
         try:
-            link = await self.link_resository.create_link(self.user.id, link_data)
+            link = await self.link_resository.create_link(
+                self.user.id, link_data
+            )
         except IntegrityError:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
