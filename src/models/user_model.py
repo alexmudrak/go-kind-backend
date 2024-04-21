@@ -11,3 +11,4 @@ class UserModel(BaseAppModel):
     nickname: Mapped[str] = mapped_column(nullable=True)
 
     token = relationship("TokenModel", uselist=False, back_populates="user")
+    links = relationship("LinkModel", back_populates="user")
