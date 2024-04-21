@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.responses import RedirectResponse
@@ -38,15 +38,11 @@ async def refresh_twitter(
     response_model=TwitterAccessTokenResponse,
 )
 async def authorize_twitter(
-    request: Request, db_session: AsyncSession = Depends(get_session)
+    request: Request,
+    code: str = Query(..., description="The code"),
+    state: str = Query(..., description="The state"),
+    db_session: AsyncSession = Depends(get_session),
 ):
-    query_params = dict(request.query_params)
-
-    if "code" not in query_params or "state" not in query_params:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Missing 'code' or 'state' query parameters.",
-        )
     url = str(request.url)
     access_token = await twitter.get_access_token(url, db_session)
 
