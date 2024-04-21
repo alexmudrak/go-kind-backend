@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.repositories.user_repository import UserRepository
@@ -9,7 +10,7 @@ class UserController:
     def __init__(self, session: AsyncSession):
         self.user_resository = UserRepository(session)
 
-    async def get_user_by_id(self, user_id: int) -> UserData:
+    async def get_user_by_id(self, user_id: uuid.UUID) -> UserData:
         user = await self.user_resository.get_user_by_id(user_id)
 
         return UserData(

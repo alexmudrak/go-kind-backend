@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.repositories.token_repository import TokenRepository
@@ -10,7 +11,7 @@ class TokenController:
         self.token_resository = TokenRepository(session)
 
     async def create_or_update(
-        self, user_id: int, data: dict
+        self, user_id: uuid.UUID, data: dict
     ) -> TokenModel:
         token_data = TokenData.model_validate(
             data

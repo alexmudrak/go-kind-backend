@@ -1,8 +1,8 @@
-"""feat: implement relationship user -> links
+"""fix: backpopulates in LinkModel
 
-Revision ID: 365ab19bd835
-Revises: c5caad8935af
-Create Date: 2024-04-21 10:38:20.739621
+Revision ID: a78a4c6fa655
+Revises: 427aeaf8b09e
+Create Date: 2024-04-21 11:06:22.983499
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '365ab19bd835'
-down_revision: Union[str, None] = 'c5caad8935af'
+revision: str = 'a78a4c6fa655'
+down_revision: Union[str, None] = '427aeaf8b09e'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

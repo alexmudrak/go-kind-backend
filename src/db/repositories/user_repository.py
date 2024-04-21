@@ -1,3 +1,4 @@
+import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +10,7 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_user_by_id(self, user_id: int) -> UserModel:
+    async def get_user_by_id(self, user_id: uuid.UUID) -> UserModel:
         query = select(UserModel).where(
             UserModel.id == user_id
         )

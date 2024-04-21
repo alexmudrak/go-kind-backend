@@ -26,7 +26,15 @@ class Settings(BaseSettings):
     )
     # DB setup
     # TODO: Change to Postgresql
-    db_url: str = "sqlite+aiosqlite:///./test.db"
+    db_host: str = os.getenv("DB_HOST", "localhost")
+    db_port: int = int(os.getenv("DB_PORT", 5432))
+    db_name: str = os.getenv("DB_NAME", "go-kind")
+    db_user: str = os.getenv("DB_USER", "go-kind")
+    db_password: str = os.getenv("DB_PASSWORD", "go-kind")
+
+    db_url: str = f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+
+
 
     class Config:
         extra = "allow"

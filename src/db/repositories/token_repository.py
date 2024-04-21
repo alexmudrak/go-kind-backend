@@ -1,4 +1,5 @@
 from datetime import datetime
+import uuid
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +22,7 @@ class TokenRepository:
 
         return result.scalars().first()
 
-    async def create_or_update(self, user_id: int, token_data: TokenData) -> TokenModel:
+    async def create_or_update(self, user_id: uuid.UUID, token_data: TokenData) -> TokenModel:
         async with self.session.begin():
             query = select(TokenModel).where(TokenModel.user_id == user_id)
 
