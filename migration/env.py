@@ -11,11 +11,13 @@ from core.config import settings
 from models.base_model import Base
 from models.user_model import UserModel
 from models.token_model import TokenModel
+from models.link_model import LinkModel
 
 _ = (
     Base,
     UserModel,
     TokenModel,
+    LinkModel,
 )
 
 # this is the Alembic Config object, which provides

@@ -10,4 +10,4 @@ class UserModel(BaseAppModel):
     username: Mapped[str] = mapped_column(nullable=True)
     nickname: Mapped[str] = mapped_column(nullable=True)
 
-    token = relationship("TokenModel", back_populates="user")
+    token = relationship("TokenModel", uselist=False, back_populates="user")
