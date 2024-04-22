@@ -29,8 +29,8 @@ async def error_handler(_: Request, exc: Exception):
 
 
 @app.get("/link/{link_id}")
-async def logout(
-    link_id: uuid.UUID, token: TokenModel = Depends(bearer_token)
+async def make_click(
+    link_id: uuid.UUID 
 ):
     return RedirectResponse(url=f"/api/v1/links/click/{link_id}")
 
