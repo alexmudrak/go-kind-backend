@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Body, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,3 +30,14 @@ async def create_link(
     link_controller = LinkController(db_session, token)
 
     return await link_controller.create_link(link_data)
+
+
+@router.get("/click/{link_id}")
+async def click_link(
+    link_id: uuid.UUID,
+    token: TokenModel = Depends(bearer_token),
+    db_session: AsyncSession = Depends(get_session),
+):
+    link_controller = LinkController(db_session, token)
+
+    return await link_controller.record_click(link_id)

@@ -1,3 +1,4 @@
+import uuid
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,3 +31,8 @@ class LinkController:
             )
 
         return ReadLinkData.model_validate(link)
+    
+    async def record_click(self, link_id: uuid.UUID):
+        await self.link_resository.record_click(link_id, self.user.id)
+
+        return await self.link_resository.get_user_click_count(link_id, self.user.id)

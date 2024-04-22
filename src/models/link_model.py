@@ -4,6 +4,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from models.base_model import BaseAppModel
+from models.association import link_clicks
 
 
 class LinkModel(BaseAppModel):
@@ -18,5 +19,10 @@ class LinkModel(BaseAppModel):
     name: Mapped[str] = mapped_column(nullable=True, default="")
     beneficiary: Mapped[str] = mapped_column(nullable=True, default="")
     description: Mapped[str] = mapped_column(nullable=True, default="")
-
+    
+    clickers = relationship(
+        "UserModel",
+        secondary=link_clicks,
+        back_populates="clicked_links",
+    )
     user = relationship("UserModel", back_populates="links")

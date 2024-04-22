@@ -1,11 +1,14 @@
 import traceback
+import uuid
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from api.dependencies import bearer_token
 from api.v1.routers import router as v1_api_router
 from core.config import settings
+from models.token_model import TokenModel
 
 app = FastAPI()
 
@@ -23,6 +26,13 @@ async def error_handler(_: Request, exc: Exception):
         status_code=500,
         content={"message": custom_message, "traceback": traceback_message},
     )
+
+
+@app.get("/link/{link_id}")
+async def logout(
+    link_id: uuid.UUID, token: TokenModel = Depends(bearer_token)
+):
+    return RedirectResponse(url=f"/api/v1/links/click/{link_id}")
 
 
 if __name__ == "__main__":
